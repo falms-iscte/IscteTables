@@ -56,10 +56,6 @@
 //    }
 //}
 
-
-
-
-
 package Projeto;
 
 import javax.swing.*;
@@ -71,15 +67,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class Main {
 	
-	
-	
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
-    
     
     
     private static void createAndShowGUI() {
@@ -130,7 +123,8 @@ public class Main {
             while ((line = br.readLine()) != null) {
             	
             	 if (firstLine) {
-                     firstLine = false; // Ignora a primeira linha
+                     firstLine = false; // Ignora a primeira linha pq é a linha do cabeçalho
+                     
                      continue;
                  }
             	
