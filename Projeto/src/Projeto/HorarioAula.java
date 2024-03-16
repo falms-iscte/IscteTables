@@ -31,6 +31,142 @@ public class HorarioAula {
 	        this.caracteristicasSalaPedida = caracteristicasSalaPedida;
 	        this.salaAtribuida = salaAtribuida;
 	    }
+
+
+
+		public String getCurso() {
+			return curso;
+		}
+
+
+
+		public void setCurso(String curso) {
+			this.curso = curso;
+		}
+
+
+
+		public String getUnidadeCurricular() {
+			return unidadeCurricular;
+		}
+
+
+
+		public void setUnidadeCurricular(String unidadeCurricular) {
+			this.unidadeCurricular = unidadeCurricular;
+		}
+
+
+
+		public String getTurno() {
+			return turno;
+		}
+
+
+
+		public void setTurno(String turno) {
+			this.turno = turno;
+		}
+
+
+
+		public String getTurma() {
+			return turma;
+		}
+
+
+
+		public void setTurma(String turma) {
+			this.turma = turma;
+		}
+
+
+
+		public int getInscritosNoTurno() {
+			return inscritosNoTurno;
+		}
+
+
+
+		public void setInscritosNoTurno(int inscritosNoTurno) {
+			this.inscritosNoTurno = inscritosNoTurno;
+		}
+
+
+
+		public String getDiaSemana() {
+			return diaSemana;
+		}
+
+
+
+		public void setDiaSemana(String diaSemana) {
+			this.diaSemana = diaSemana;
+		}
+
+
+
+		public String getHoraInicioAula() {
+			return horaInicioAula;
+		}
+
+
+
+		public void setHoraInicioAula(String horaInicioAula) {
+			this.horaInicioAula = horaInicioAula;
+		}
+
+
+
+		public String getHoraFimAula() {
+			return horaFimAula;
+		}
+
+
+
+		public void setHoraFimAula(String horaFimAula) {
+			this.horaFimAula = horaFimAula;
+		}
+
+
+
+		public String getDataAula() {
+			return dataAula;
+		}
+
+
+
+		public void setDataAula(String dataAula) {
+			this.dataAula = dataAula;
+		}
+
+
+
+		public String getCaracteristicasSalaPedida() {
+			return caracteristicasSalaPedida;
+		}
+
+
+
+		public void setCaracteristicasSalaPedida(String caracteristicasSalaPedida) {
+			this.caracteristicasSalaPedida = caracteristicasSalaPedida;
+		}
+
+
+
+		public String getSalaAtribuida() {
+			return salaAtribuida;
+		}
+
+
+
+		public void setSalaAtribuida(String salaAtribuida) {
+			this.salaAtribuida = salaAtribuida;
+		}
+	    
+	    
+	    
+	    
 	    
 	    
 	    
