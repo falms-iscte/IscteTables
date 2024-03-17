@@ -81,12 +81,15 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
-        // Cria o modelo da tabela com os nomes das colunas
+        
+        
         String[] columnNames = {"Curso", "Unidade Curricular", "Turno", "Turma", "Inscritos no Turno",
-                "Dia da Semana", "Hora Início", "Hora Fim", "Data da Aula", "Características da Sala", "Sala Atribuída"};
+                "Dia da Semana", "Hora de Início", "Hora de Fim", "Data da Aula", "Características pedidas para Sala", "Sala Atribuída"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 
-        // Lê os dados do arquivo CSV e adiciona ao modelo da tabela
+        
+        
+        // le dados do arquivo CSV e adiciona ao modelo da tabela
         List<HorarioAula> horarios = readHorariosFromCSV("HorarioDeExemplo.csv");
         for (HorarioAula horario : horarios) {
             model.addRow(new Object[]{horario.getCurso(), horario.getUnidadeCurricular(), horario.getTurno(),
@@ -95,14 +98,14 @@ public class Main {
                     horario.getCaracteristicasSalaPedida(), horario.getSalaAtribuida()});
         }
 
-        // Cria a tabela com o modelo de dados
+        // cria tabela com o modelo de dados
         JTable table = new JTable(model);
 
-        // Adiciona a tabela a um JScrollPane
+        // adiciona  tabela a um JScrollPane
         JScrollPane scrollPane = new JScrollPane(table);
         frame.add(scrollPane);
 
-        // Exibe a janela
+        
         frame.setVisible(true);
     }
 
