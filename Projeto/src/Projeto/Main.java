@@ -21,7 +21,7 @@ public class Main {
 
     private static void createAndShowGUI() {
         // Cria a janela principal
-        JFrame frame = new JFrame("Horários de Aulaa");
+        JFrame frame = new JFrame("Horários de Aula");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
