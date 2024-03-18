@@ -32,7 +32,7 @@ public class Main {
 
         // le dados do arquivo CSV e adiciona ao modelo da tabela
         List<HorarioAula> horarios = readHorariosFromCSV(
-                "Projeto/HorarioDeExemplo.csv");
+                "src/Projeto/HorarioDeExemplo.csv");
         for (HorarioAula horario : horarios) {
             model.addRow(new Object[] { horario.getCurso(), horario.getUnidadeCurricular(), horario.getTurno(),
                     horario.getTurma(), horario.getInscritosNoTurno(), horario.getDiaSemana(),
