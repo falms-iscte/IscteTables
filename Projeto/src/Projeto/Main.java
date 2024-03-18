@@ -11,7 +11,11 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+    	
+    	String currentPath = new java.io.File(".").getCanonicalPath();
+    	System.out.println("Current dir:" + currentPath);
+    	
         SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
 
