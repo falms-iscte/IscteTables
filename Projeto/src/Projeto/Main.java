@@ -12,16 +12,16 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-    	
-    	String currentPath = new java.io.File(".").getCanonicalPath();
-    	System.out.println("Current dir:" + currentPath);
-    	
+
+        String currentPath = new java.io.File(".").getCanonicalPath();
+        System.out.println("Current dir:" + currentPath);
+
         SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
 
     private static void createAndShowGUI() {
         // Cria a janela principal
-        JFrame frame = new JFrame("Horários de Aula");
+        JFrame frame = new JFrame("Horários de Aulaa");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
@@ -32,7 +32,7 @@ public class Main {
 
         // le dados do arquivo CSV e adiciona ao modelo da tabela
         List<HorarioAula> horarios = readHorariosFromCSV(
-                "Projeto/HorarioDeExemplo.csv");
+                "HorarioDeExemplo.csv");
         for (HorarioAula horario : horarios) {
             model.addRow(new Object[] { horario.getCurso(), horario.getUnidadeCurricular(), horario.getTurno(),
                     horario.getTurma(), horario.getInscritosNoTurno(), horario.getDiaSemana(),
