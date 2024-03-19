@@ -1,8 +1,10 @@
-
 package Projeto;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,12 +13,14 @@ import java.util.List;
 
 public class Main {
 
+    private static DefaultTableModel model;
+
     public static void main(String[] args) throws IOException {
 
         String currentPath = new java.io.File(".").getCanonicalPath();
         System.out.println("Current dir:" + currentPath);
 
-        SwingUtilities.invokeLater(() -> createAndShowGUI());
+        SwingUtilities.invokeLater(Main::createAndShowGUI);
     }
 
     private static void createAndShowGUI() {
@@ -28,7 +32,7 @@ public class Main {
         String[] columnNames = { "Curso", "Unidade Curricular", "Turno", "Turma", "Inscritos no Turno",
                 "Dia da Semana", "Hora de Início", "Hora de Fim", "Data da Aula", "Características pedidas para Sala",
                 "Sala Atribuída" };
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        model = new DefaultTableModel(columnNames, 0);
 
         // le dados do arquivo CSV e adiciona ao modelo da tabela
         List<HorarioAula> horarios = readHorariosFromCSV(
@@ -44,9 +48,52 @@ public class Main {
         JTable table = new JTable(model);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        frame.add(scrollPane);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Campo de texto para filtro
+        JTextField filterText = new JTextField();
+        filterText.setPreferredSize(new Dimension(200, 25)); // Definindo o tamanho preferido
+
+        JButton filterButton = new JButton("Filtrar");
+
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        filterPanel.add(new JLabel("Filtrar por nome:"));
+        filterPanel.add(filterText);
+        filterPanel.add(filterButton);
+
+        filterButton.addActionListener(e -> {
+            String text = filterText.getText().toLowerCase();
+            filter(text);
+        });
+
+        frame.add(filterPanel, BorderLayout.NORTH);
 
         frame.setVisible(true);
+    }
+
+    private static void filter(String text) {
+        // Limpa o modelo atual
+        model.setRowCount(0);
+
+        // le dados do arquivo CSV e adiciona ao modelo da tabela
+        List<HorarioAula> horarios = readHorariosFromCSV(
+                "HorarioDeExemplo.csv");
+        for (HorarioAula horario : horarios) {
+            // Verifica se o nome contém o texto de filtro
+            if (horario.getCurso().toLowerCase().contains(text) ||
+                    horario.getUnidadeCurricular().toLowerCase().contains(text) ||
+                    horario.getTurno().toLowerCase().contains(text) ||
+                    horario.getTurma().toLowerCase().contains(text) ||
+                    horario.getDiaSemana().toLowerCase().contains(text) ||
+                    horario.getDataAula().toLowerCase().contains(text) ||
+                    horario.getCaracteristicasSalaPedida().toLowerCase().contains(text) ||
+                    horario.getSalaAtribuida().toLowerCase().contains(text)) {
+                model.addRow(new Object[] { horario.getCurso(), horario.getUnidadeCurricular(), horario.getTurno(),
+                        horario.getTurma(), horario.getInscritosNoTurno(), horario.getDiaSemana(),
+                        horario.getHoraInicioAula(), horario.getHoraFimAula(), horario.getDataAula(),
+                        horario.getCaracteristicasSalaPedida(), horario.getSalaAtribuida() });
+            }
+        }
     }
 
     private static List<HorarioAula> readHorariosFromCSV(String csvFile) {
@@ -82,5 +129,4 @@ public class Main {
         }
         return horarios;
     }
-
 }
