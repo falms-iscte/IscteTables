@@ -130,7 +130,7 @@ public class Main {
         }
     }
 
-    private static List<HorarioAula> readHorariosFromCSV(String csvFile) {
+    public static List<HorarioAula> readHorariosFromCSV(String csvFile) {
         List<HorarioAula> horarios = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             String line;
