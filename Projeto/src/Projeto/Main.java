@@ -39,11 +39,9 @@ public class Main {
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        // Adicionando colunas Semana do ano e Semana do semestre
         model.addColumn("Semana do Ano");
         model.addColumn("Semana do Semestre");
 
-        // Configurando o RowSorter
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
         table.setRowSorter(sorter);
 
@@ -99,7 +97,6 @@ public class Main {
         frame.add(topPanel, BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        // Adiciona o listener do mouse para o cabeçalho da tabela
         JTableHeader header = table.getTableHeader();
         header.addMouseListener(new MouseAdapter() {
             @Override
@@ -139,9 +136,8 @@ public class Main {
 
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(";");
-                if (data.length != 11) { // Verifica se o número de campos está correto
-                    // Lidar com linhas incompletas ou inválidas, se necessário
-                    continue; // Ignora esta linha e passa para a próxima
+                if (data.length != 11) { 
+                    continue; 
                 }
 
                 // Verifica se o campo "Inscritos no turno" contém um valor numérico
@@ -149,9 +145,7 @@ public class Main {
                 try {
                     inscritosNoTurno = Integer.parseInt(data[4]);
                 } catch (NumberFormatException e) {
-                    // Lidar com o caso em que o campo "Inscritos no turno" não é um número
-                    // Por exemplo, atribuir um valor padrão ou ignorar esta linha
-                    continue; // Ignora esta linha e passa para a próxima
+                    continue;
                 }
                 HorarioAula horario = new HorarioAula(data[0], data[1], data[2], data[3], inscritosNoTurno,
                         data[5], data[6], data[7], data[8], data[9], data[10]);
@@ -218,10 +212,10 @@ public class Main {
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); i++) {
             TableColumn column = columnModel.getColumn(i);
-            column.setMinWidth(50); // Define a largura mínima da coluna
-            column.setMaxWidth(Integer.MAX_VALUE); // Define a largura máxima da coluna
-            column.setPreferredWidth(100); // Define a largura preferencial da coluna
-            column.setResizable(true); // Permite redimensionamento da coluna
+            column.setMinWidth(50); 
+            column.setMaxWidth(Integer.MAX_VALUE);
+            column.setPreferredWidth(100);
+            column.setResizable(true); 
         }
     }
 }
