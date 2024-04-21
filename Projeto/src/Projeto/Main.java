@@ -1,6 +1,7 @@
 package Projeto;
 
 import org.apache.commons.csv.CSVFormat;
+
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.json.JSONArray;
@@ -12,20 +13,58 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        // Carregar os dados do arquivo CSV
+        // Criar pag inicial
+    	String buttonsHTML = generateButtonsHTML();
+        saveHTMLToFile(buttonsHTML, "PaginaInicial.html");
+        
+        
+        
+        
+        
+        //Carregar primeiro CSV de horarios
         List<CSVRecord> csvData = readCSVFile("HorariosTESTE.csv");
 
         // Gerar o conteúdo JSON da tabela Tabulator
-        String jsonTableData = convertToJSON(csvData);
+        String jsonTableData = convertToJSONfromHorarios(csvData);
 
         // Gerar o conteúdo HTML da tabela Tabulator
         String htmlContent = generateHTML(jsonTableData);
 
         // Salvar o conteúdo HTML em um arquivo
-        saveHTMLToFile(htmlContent, "table.html");
+        saveHTMLToFile(htmlContent, "Horarios.html");
+        
+        
+        
+        
+        
+        //Carregar o outro csv de salas
+        //List<CSVRecord> csvData2 = readCSVFile("CaracterizaçãoDasSalas.csv");
 
-        // Abrir o arquivo HTML no navegador
-        openHTMLFileInBrowser("table.html");
+        // Gerar o conteúdo JSON da tabela Tabulator
+        String jsonTableData2 = convertToJSONfromSalas("CaracterizaçãoDasSalas.csv");
+
+        // Gerar o conteúdo HTML da tabela Tabulator
+        String htmlContent2 = generateHTML(jsonTableData2);
+
+        // Salvar o conteúdo HTML em um arquivo
+        saveHTMLToFile(htmlContent2, "Salas.html");
+        
+        
+        
+        
+        
+        // Abrir o arquivo buttons.html no navegador
+        openHTMLFileInBrowser("PaginaInicial.html");
+    }
+    
+    private static String generateButtonsHTML() {
+        // Gerar o conteúdo HTML com os botões para selecionar entre os diferentes conjuntos de dados
+        String html = "<!DOCTYPE html><html><head></head><body>";
+        html += "<button onclick='openHTML(\"Horarios.html\")'>Visualizar Tabela 1</button>";
+        html += "<button onclick='openHTML(\"Salas.html\")'>Visualizar Tabela 2</button>";
+        html += "<script>function openHTML(fileName) { window.open(fileName); }</script>";
+        html += "</body></html>";
+        return html;
     }
 
     private static List<CSVRecord> readCSVFile(String csvFile) throws IOException {
@@ -35,7 +74,7 @@ public class Main {
         return csvParser.getRecords();
     }
 
-    private static String convertToJSON(List<CSVRecord> csvData) {
+    private static String convertToJSONfromHorarios(List<CSVRecord> csvData) {
         // Converter os dados do CSV para JSON
         JSONArray jsonArray = new JSONArray();
         for (CSVRecord record : csvData) {
@@ -57,6 +96,28 @@ public class Main {
         }
         return jsonArray.toString();
     }
+    
+    private static String convertToJSONfromSalas(String csvFilePath) {
+        JSONArray jsonArray = new JSONArray();
+        try {
+            Reader reader = new FileReader(csvFilePath);
+            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader());
+            List<CSVRecord> csvRecords = csvParser.getRecords();
+            for (CSVRecord record : csvRecords) {
+                JSONObject jsonObject = new JSONObject();
+                for (int i = 0; i < record.size(); i++) {
+                    jsonObject.put(csvParser.getHeaderNames().get(i), record.get(i));
+                }
+                jsonArray.put(jsonObject);
+            }
+            csvParser.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonArray.toString();
+    }
+    
+
 
     private static String generateHTML(String jsonTableData) {
         // Gerar o conteúdo HTML da tabela Tabulator
@@ -76,11 +137,14 @@ public class Main {
         writer.close();
     }
 
-    private static void openHTMLFileInBrowser(String fileName) throws IOException {
+    private static void openHTMLFileInBrowser(String filePath) throws IOException {
         // Abrir o arquivo HTML no navegador padrão
-        File htmlFile = new File(fileName);
-        Desktop.getDesktop().browse(htmlFile.toURI());
+        Runtime.getRuntime().exec("cmd /c start " + filePath); // para Windows
+        // Runtime.getRuntime().exec("open " + filePath); // para MacOS
+        // Runtime.getRuntime().exec("xdg-open " + filePath); // para Linux
     }
+
+
 }
 
 
