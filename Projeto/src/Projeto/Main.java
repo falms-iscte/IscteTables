@@ -1,221 +1,113 @@
 package Projeto;
 
-import javax.swing.*;
-import javax.swing.table.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
-import java.text.*;
-import java.util.*;
 import java.util.List;
 
 public class Main {
-
-    private static DefaultTableModel model;
-    private static JTable table;
-    private static JTextField[] filterTextFields;
-    private static JButton filterButton;
-    private static JComboBox<String> filterComboBox;
-
     public static void main(String[] args) throws IOException {
+        // Carregar os dados do arquivo CSV
+        List<CSVRecord> csvData = readCSVFile("HorariosTESTE.csv");
 
-        String currentPath = new java.io.File(".").getCanonicalPath();
-        System.out.println("Current dir:" + currentPath);
+        // Gerar o conteúdo JSON da tabela Tabulator
+        String jsonTableData = convertToJSON(csvData);
 
-        SwingUtilities.invokeLater(Main::createAndShowGUI);
+        // Gerar o conteúdo HTML da tabela Tabulator
+        String htmlContent = generateHTML(jsonTableData);
+
+        // Salvar o conteúdo HTML em um arquivo
+        saveHTMLToFile(htmlContent, "table.html");
+
+        // Abrir o arquivo HTML no navegador
+        openHTMLFileInBrowser("table.html");
     }
 
-    private static void createAndShowGUI() {
-        // Cria a janela principal
-        JFrame frame = new JFrame("Horários de Aula");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 600);
+    private static List<CSVRecord> readCSVFile(String csvFile) throws IOException {
+        // Ler o arquivo CSV usando Apache Commons CSV e especificar o cabeçalho das colunas
+        Reader reader = new FileReader(csvFile);
+        CSVParser csvParser = CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader().parse(reader);
+        return csvParser.getRecords();
+    }
 
-        String[] columnNames = { "Curso", "Unidade Curricular", "Turno", "Turma", "Inscritos no Turno",
-                "Dia da Semana", "Hora de Início", "Hora de Fim", "Data da Aula", "Características pedidas para Sala",
-                "Sala Atribuída" };
-
-        model = new DefaultTableModel(columnNames, 0);
-        table = new JTable(model);
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        model.addColumn("Semana do Ano");
-        model.addColumn("Semana do Semestre");
-
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        table.setRowSorter(sorter);
-
-        JPanel topPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 5);
-
-        filterTextFields = new JTextField[columnNames.length];
-        for (int i = 0; i < columnNames.length; i++) {
-            JPanel columnPanel = new JPanel(new BorderLayout());
-            JLabel label = new JLabel(columnNames[i] + ":");
-            columnPanel.add(label, BorderLayout.NORTH);
-            JTextField filterField = new JTextField(15);
-            filterTextFields[i] = filterField;
-            columnPanel.add(filterField, BorderLayout.CENTER);
-            topPanel.add(columnPanel, gbc);
-            gbc.gridx++;
+    private static String convertToJSON(List<CSVRecord> csvData) {
+        // Converter os dados do CSV para JSON
+        JSONArray jsonArray = new JSONArray();
+        for (CSVRecord record : csvData) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("Curso", record.get("Curso"));
+            jsonObject.put("Unidade Curricular", record.get("Unidade Curricular"));
+            jsonObject.put("Turno", record.get("Turno"));
+            jsonObject.put("Turma", record.get("Turma"));
+            jsonObject.put("Inscritos no Turno", record.get("Inscritos no turno")); // Corrigido para correspondência exata
+            jsonObject.put("Dia da Semana", record.get("Dia da semana")); // Corrigido para correspondência exata
+            jsonObject.put("Hora de Início", record.get("Hora início da aula")); // Corrigido para correspondência exata
+            jsonObject.put("Hora de Fim", record.get("Hora fim da aula")); // Corrigido para correspondência exata
+            jsonObject.put("Data da Aula", record.get("Data da aula")); // Corrigido para correspondência exata
+            jsonObject.put("Características pedidas para Sala", record.get("Características da sala pedida para a aula")); // Corrigido para correspondência exata
+            jsonObject.put("Sala Atribuída", record.get("Sala atribuída à aula")); // Corrigido para correspondência exata
+            //jsonObject.put("Semana do Ano", record.get("Semana do Ano")); // Corrigido para correspondência exata
+            //jsonObject.put("Semana do Semestre", record.get("Semana do Semestre")); // Corrigido para correspondência exata
+            jsonArray.put(jsonObject);
         }
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = columnNames.length;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        filterComboBox = new JComboBox<>(new String[] { "E", "OU" });
-        buttonsPanel.add(filterComboBox);
-
-        filterButton = new JButton("Filtrar");
-        filterButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                applyFilters();
-            }
-        });
-        buttonsPanel.add(filterButton);
-
-        JButton showHiddenColumnsButton = new JButton("Mostrar Colunas Escondidas");
-        showHiddenColumnsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showHiddenColumns();
-            }
-        });
-        buttonsPanel.add(showHiddenColumnsButton);
-
-        topPanel.add(buttonsPanel, gbc);
-
-        frame.add(topPanel, BorderLayout.NORTH);
-        frame.add(scrollPane, BorderLayout.CENTER);
-
-        JTableHeader header = table.getTableHeader();
-        header.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    showColumnPopupMenu(e);
-                }
-            }
-        });
-
-        frame.setVisible(true);
-
-        // Le os dados do arquivo CSV e popula a tabela
-        readAndPopulateData("HorarioDeExemplo.csv");
+        return jsonArray.toString();
     }
 
-    private static void readAndPopulateData(String csvFile) {
-        List<HorarioAula> horarios = readHorariosFromCSV(csvFile);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-        for (HorarioAula horario : horarios) {
-            model.addRow(new Object[] { horario.getCurso(), horario.getUnidadeCurricular(), horario.getTurno(),
-                    horario.getTurma(), horario.getInscritosNoTurno(), horario.getDiaSemana(),
-                    horario.getHoraInicioAula(), horario.getHoraFimAula(), horario.getDataAula(),
-                    horario.getCaracteristicasSalaPedida(), horario.getSalaAtribuida(),
-                    horario.getSemanaDoAno(), horario.getSemanaDoSemestre() });
-        }
+    private static String generateHTML(String jsonTableData) {
+        // Gerar o conteúdo HTML da tabela Tabulator
+        String html = "<!DOCTYPE html><html><head><link href='https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css' rel='stylesheet'>";
+        html += "<script src='https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js'></script>";
+        html += "</head><body><div id='example-table'></div>";
+        html += "<script>var table = new Tabulator('#example-table', {data: " + jsonTableData + ", autoColumns:true});</script>";
+        html += "</body></html>";
+        return html;
     }
 
-    public static List<HorarioAula> readHorariosFromCSV(String csvFile) {
-        List<HorarioAula> horarios = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            String line;
 
-            boolean firstLine = true; // Flag para identificar a primeira linha
-
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(";");
-                if (data.length != 11) { 
-                    continue; 
-                }
-
-                // Verifica se o campo "Inscritos no turno" contém um valor numérico
-                int inscritosNoTurno;
-                try {
-                    inscritosNoTurno = Integer.parseInt(data[4]);
-                } catch (NumberFormatException e) {
-                    continue;
-                }
-                HorarioAula horario = new HorarioAula(data[0], data[1], data[2], data[3], inscritosNoTurno,
-                        data[5], data[6], data[7], data[8], data[9], data[10]);
-                horarios.add(horario);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return horarios;
+    private static void saveHTMLToFile(String htmlContent, String fileName) throws IOException {
+        // Salvar o conteúdo HTML em um arquivo
+        FileWriter writer = new FileWriter(fileName);
+        writer.write(htmlContent);
+        writer.close();
     }
 
-    private static void applyFilters() {
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        table.setRowSorter(sorter);
-
-        List<RowFilter<Object, Object>> filters = new ArrayList<>();
-        for (int i = 0; i < filterTextFields.length; i++) {
-            String text = filterTextFields[i].getText();
-            if (!text.isEmpty()) {
-                RowFilter<Object, Object> filter = RowFilter.regexFilter("(?i)" + text, i);
-                filters.add(filter);
-            }
-        }
-
-        RowFilter<Object, Object> combinedFilter;
-        if (filterComboBox.getSelectedItem().equals("E")) {
-            combinedFilter = RowFilter.andFilter(filters);
-        } else {
-            combinedFilter = RowFilter.orFilter(filters);
-        }
-
-        sorter.setRowFilter(combinedFilter);
-    }
-
-    private static void showColumnPopupMenu(MouseEvent e) {
-        JTableHeader header = (JTableHeader) e.getSource();
-        JPopupMenu popupMenu = new JPopupMenu();
-        TableColumnModel columnModel = header.getColumnModel();
-        int column = columnModel.getColumnIndexAtX(e.getX());
-        int modelColumn = table.convertColumnIndexToModel(column);
-
-        JMenuItem hideColumnItem = new JMenuItem("Esconder Coluna");
-        hideColumnItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hideColumn(modelColumn);
-            }
-        });
-        popupMenu.add(hideColumnItem);
-
-        popupMenu.show(header, e.getX(), e.getY());
-    }
-
-    private static void hideColumn(int columnIndex) {
-        TableColumn column = table.getColumnModel().getColumn(columnIndex);
-        column.setMinWidth(0);
-        column.setMaxWidth(0);
-        column.setPreferredWidth(0);
-        column.setResizable(false);
-    }
-
-    private static void showHiddenColumns() {
-        TableColumnModel columnModel = table.getColumnModel();
-        for (int i = 0; i < columnModel.getColumnCount(); i++) {
-            TableColumn column = columnModel.getColumn(i);
-            column.setMinWidth(50); 
-            column.setMaxWidth(Integer.MAX_VALUE);
-            column.setPreferredWidth(100);
-            column.setResizable(true); 
-        }
+    private static void openHTMLFileInBrowser(String fileName) throws IOException {
+        // Abrir o arquivo HTML no navegador padrão
+        File htmlFile = new File(fileName);
+        Desktop.getDesktop().browse(htmlFile.toURI());
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
